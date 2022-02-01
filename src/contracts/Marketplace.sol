@@ -10,7 +10,7 @@ contract Marketplace {
         uint256 id;
         string name;
         uint256 price;
-        address owner;
+        address payable owner;
         bool purchased;
     }
 
@@ -18,7 +18,15 @@ contract Marketplace {
         uint256 id,
         string name,
         uint256 price,
-        address owner,
+        address payable owner,
+        bool purchased
+    );
+
+    event ProductPurchased(
+        uint256 id,
+        string name,
+        uint256 price,
+        address payable owner,
         bool purchased
     );
 
@@ -41,5 +49,31 @@ contract Marketplace {
         );
 
         emit ProductCreated(productCount, _name, _price, msg.sender, false);
+    }
+
+    function purchaseProduct(uint256 _id) public payable {
+        Product memory _product = products[_id];
+
+        address payable _seller = _product.owner;
+
+        require(_product.id > 0 && _product.id <= productCount);
+        require(msg.value >= _product.price);
+        require(!_product.purchased);
+        require(_seller != msg.sender);
+
+        _product.owner = msg.sender;
+        _product.purchased = true;
+
+        products[_id] = _product;
+
+        address(_seller).transfer(msg.value);
+
+        emit ProductPurchased(
+            productCount,
+            _product.name,
+            _product.price,
+            msg.sender,
+            true
+        );
     }
 }

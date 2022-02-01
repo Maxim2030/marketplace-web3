@@ -4,6 +4,6 @@ contract Marketplace {
     string public name;
 
     constructor() public {
-        name = "Dapp University Marketplace";
+        name = "Marketplace Name";
     }
 }

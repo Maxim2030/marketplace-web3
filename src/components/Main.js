@@ -12,7 +12,7 @@ class Main extends Component {
             const name = this.productName.value;
             const price = window.web3.utils.toWei(
               this.productPrice.value.toString(),
-              "Ether"
+              "ether"
             );
             console.log("price => ", price);
             this.props.createProduct(name, price);
@@ -61,15 +61,25 @@ class Main extends Component {
           </thead>
 
           <tbody id="productList">
-            <tr>
-              <th scope="row">1</th>
-              <td>iPhone 13</td>
-              <td>1 Eth</td>
-              <td>0x3232</td>
-              <td>
-                <button className="buyButton">Buy</button>
-              </td>
-            </tr>
+            {this.props.products.map((product, key) => {
+              return (
+                <tr key={key}>
+                  <th scope="row">{product.id.toString()}</th>
+                  <td>{product.name}</td>
+                  <td>
+                    {window.web3.utils.fromWei(
+                      product.price.toString(),
+                      "ether"
+                    )}{" "}
+                    Eth
+                  </td>
+                  <td>{product.owner}</td>
+                  <td>
+                    <button className="buyButton">Buy</button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

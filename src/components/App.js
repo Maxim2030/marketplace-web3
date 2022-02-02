@@ -56,18 +56,29 @@ class App extends Component {
     console.log("marketplace => ", marketplace);
     this.setState({ marketplace });
 
-    const productCount = marketplace.methods.productCount().call();
+    const productCount = await marketplace.methods.productCount().call();
+    console.log("productCount => ", productCount);
     this.setState({ productCount });
 
+    for (let i = 1; i <= productCount; i++) {
+      const product = await marketplace.methods.products(i).call();
+      this.setState({
+        products: [...this.state.products, product],
+      });
+    }
+    // console.log("products => ", this.state.products);
     this.setState({ loading: false });
   }
 
   async createProduct(name, price) {
+    console.log("[createProduct] name => ", name);
+    console.log("[createProduct] price => ", price);
     this.setState({ loading: true });
     this.state.marketplace.methods
       .createProduct(name, price)
       .send({ from: this.state.account })
-      .once("receipt", (recepit) => {
+      .once("receipt", (receipt) => {
+        console.log("[createProduct] receipt => ", receipt);
         this.setState({ loading: false });
       });
   }
@@ -94,7 +105,10 @@ class App extends Component {
               {this.state.loading ? (
                 <p>Loading...</p>
               ) : (
-                <Main createProduct={this.createProduct} />
+                <Main
+                  createProduct={this.createProduct}
+                  products={this.state.products}
+                />
               )}
             </main>
           </div>
